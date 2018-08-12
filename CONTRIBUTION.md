@@ -12,7 +12,7 @@ We currently do not require any CLA to begin contributing, but if you make a sig
 
 ## Getting Started
 
-We maintain a list of things we would like to add to this project or aspects of it we would like to fix or improve.  If you just want to get involved and not sure where to start, take a look at [TODO.md](TODO.md) for ideas. Picking one of those up would be amazing and much appreciated!
+We maintain a list of things we would like to add to this project or aspects of it we would like to fix or improve.  If you just want to get involved and not sure where to start, take a look at [ehancements](https://github.com/Anti-graviton/assistant-bot/labels/enhancement) for ideas. Picking one of those up would be amazing and much appreciated!
 
 
 ## How to Report a Bug
