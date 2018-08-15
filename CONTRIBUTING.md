@@ -2,7 +2,7 @@
 
 ## CLA
 
-We currently do not require any CLA to begin contributing, but if you make a significant contribution be aware that we might reach out to you in the future if we ever try to relicense this project. 
+We currently do not require any CLA to begin contributing, but if you make a significant contribution be aware that we might reach out to you in the future if we ever try to relicense this project.
 
 ## Responsibilities
 
