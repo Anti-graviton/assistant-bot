@@ -1,60 +1,22 @@
 from mattermostdriver import Driver
 
-client = Driver({
-    # """
-    # Required options
 
-    # Instead of the login/password, you can also use a personal access token.
-    # If you have a token, you don't need to pass login/pass.
-    # """
+def main():
+    print("Creating Mattermost Driver...")
+    driver_options = {
+        'url': '172.16.30.11',
+        'login_id': 'kia',
+        'password': '123456',
+        'port': 8065,
+        'scheme': 'http'
+    }
+    driver = Driver(driver_options)
 
-    'url': '172.16.30.11',
-    'login_id': 'kia',
-    'password': '123456',
-    # 'token': 'YourPersonalAccessToken',
-    'scheme': 'http',
-    'port': 8065,
-    'basepath': '/api/v4',
-    'verify': True,
-    # 'mfa_token': 'YourMFAToken'
+    print("Authenticating...")
+    driver.login()
+    driver.users.get_user('me')
+    print("Successfully authenticated.")
 
-    # """
-    # Optional options
 
-    # These options already have useful defaults or are just not needed in every case.
-    # In most cases, you won't need to modify these, especially the basepath.
-    # If you can only use a self signed/insecure certificate, you should set
-    # verify to False. Please double check this if you have any errors while
-    # using a self signed certificate!
-    # """
-
-    # 'scheme': 'https',
-    # 'port': 8065,
-    # 'basepath': '/api/v4',
-    # 'verify': True,
-    # 'mfa_token': 'YourMFAToken'
-
-    # """
-    # If for some reasons you get regular timeouts after a while, try to decrease
-    # this value. The websocket will ping the server in this interval to keep the connection
-    # alive.
-    # If you have access to your server configuration, you can of course increase the timeout
-    # there.
-    # """
-
-    'timeout': 30,
-
-    # """
-    # Setting debug to True, will activate a very verbose logging.
-    # This also activates the logging for the requests package,
-    # so you can see every request you send.
-
-    # Be careful. This SHOULD NOT be active in production, because this logs a lot!
-    # Even the password for your account when doing driver.login()!
-    # """
-    'debug': True
-})
-
-login_result = client.login()
-
-print(login_result.json())
+if __name__ == '__main__':
+    main()
