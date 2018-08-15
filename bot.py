@@ -1,5 +1,6 @@
 from mattermostdriver import Driver
 from tools import utils, driver
+import asyncio
 
 
 def main():
@@ -17,6 +18,13 @@ def main():
 
     print("Preparing participants database...")
     utils.create_users(members)
+
+    driver.init_websocket(sample_handler)
+
+
+@asyncio.coroutine
+def sample_handler(message):
+    print(message)
 
 
 if __name__ == '__main__':
