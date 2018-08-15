@@ -13,7 +13,8 @@ driver_options = {
     'login_id': 'kia',
     'password': '123456',
     'port': 8065,
-    'scheme': 'http'
+    'scheme': 'http',
+    'timeout': 30
 }
 
 driver = Driver(driver_options)

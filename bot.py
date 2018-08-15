@@ -1,21 +1,22 @@
 from mattermostdriver import Driver
+from tools import utils, driver
 
 
 def main():
-    print("Creating Mattermost Driver...")
-    driver_options = {
-        'url': '172.16.30.11',
-        'login_id': 'kia',
-        'password': '123456',
-        'port': 8065,
-        'scheme': 'http'
-    }
-    driver = Driver(driver_options)
 
     print("Authenticating...")
     driver.login()
     driver.users.get_user('me')
     print("Successfully authenticated.")
+
+    print("Retrieving Coffee Buddies participants...")
+    team_name = 'ITTest'
+    channel_name = 'town-square'
+    members = utils.get_channel_members(driver, team_name, channel_name)
+    print("Successfully retrieved Coffee Buddies participants.")
+
+    print("Preparing participants database...")
+    utils.create_users(members)
 
 
 if __name__ == '__main__':

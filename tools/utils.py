@@ -55,7 +55,14 @@ def create_users(members):
     #     """
     #     # Set only the users that exist in the input list as active
 
-    mattermost_users = driver.users.get_users_by_ids(members)
+    team = driver.teams.get_team_by_name('ITTest')
+    channel = driver.channels.get_channel_by_name(
+        team['id'], 'town-square')
+
+    mattermost_users = driver.users.get_users(params={
+        'in_team': team['id'],
+        'in_channel': channel['id']
+    })
 
     for matermost_user in mattermost_users:
         pass
