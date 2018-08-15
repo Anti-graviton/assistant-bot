@@ -1,6 +1,6 @@
 from mattermostdriver import Driver
 
-foo = Driver({
+client = Driver({
     # """
     # Required options
 
@@ -55,6 +55,4 @@ foo = Driver({
     'debug': True
 })
 
-login_result = foo.login()
-
-print(login_result)
+login_result = client.login()
