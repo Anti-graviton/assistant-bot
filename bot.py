@@ -8,12 +8,12 @@ client = Driver({
     # If you have a token, you don't need to pass login/pass.
     # """
 
-    'url': 'fanype.fanap.plus',
-    'login_id': 'kia@fanap.plus',
-    'password': 'imsherlocked',
+    'url': '172.16.30.11',
+    'login_id': 'kia',
+    'password': '123456',
     # 'token': 'YourPersonalAccessToken',
-    'scheme': 'https',
-    'port': 443,
+    'scheme': 'http',
+    'port': 8065,
     'basepath': '/api/v4',
     'verify': True,
     # 'mfa_token': 'YourMFAToken'
@@ -56,3 +56,5 @@ client = Driver({
 })
 
 login_result = client.login()
+
+print(login_result.json())
