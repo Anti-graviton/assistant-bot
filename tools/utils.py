@@ -2,6 +2,9 @@ import random
 import pymongo
 from pymongo import MongoClient
 from . import db, user_collection, driver
+from . import models
+from datetime import datetime
+import json
 
 
 def get_channel(driver, team_name, channel_name):
@@ -64,8 +67,23 @@ def create_users(members):
         'in_channel': channel['id']
     })
 
-    for matermost_user in mattermost_users:
-        pass
+    users = user_collection.find()
+    existing_user_ids = list(map(lambda x: x['user_id'], users))
+
+    for mattermost_user in mattermost_users:
+        if mattermost_user['id'] in existing_user_ids:
+            continue
+        user = models.User()
+        user.user_id = mattermost_user['id']
+        user.active = True
+        user.date_created = datetime.now()
+        user.username = mattermost_user['username']
+        user.nickname = mattermost_user['nickname']
+        user.first_name = mattermost_user['first_name']
+        user.last_name = mattermost_user['last_name']
+        user.email = mattermost_user['email']
+
+        user_collection.insert_one(user.__dict__)
 
     #  session.query(User).update({
     #      'active': False})

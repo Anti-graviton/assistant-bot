@@ -12,12 +12,19 @@ class BaseModel(object):
 class User(BaseModel):
 
     user_id = None
+    username = ''
+    email = ''
+    nickname = ''
+    first_name = ''
+    last_name = ''
     active = True
+    plate_number = ''
 
     def __repr__(self):
-        return '<User {} - {}>'.format(
+        return '<User {} - {} - {}>'.format(
             self.user_id,
-            'Active' if self.active else 'Inactive')
+            'Active' if self.active else 'Inactive',
+            self.plate_number)
 
 
 #  class Pair(Base):
