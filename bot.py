@@ -34,8 +34,23 @@ def sample_handler(message_string):
     if message['event'] != 'posted':
         # print('passing cuz event was not "posted"')
         return
-        
-    print(message)
+
+    if 'data' not in message:
+        return
+
+    if message['data']['channel_type'] != 'D':
+        return
+
+    post = json.loads(message['data']['post'])
+
+    message_content = post['message'].lower()
+
+    if message_content is 'register':
+        print('getting registered!')
+        return
+
+    print('message did not match any criteria')
+
 
 if __name__ == '__main__':
     main()
