@@ -11,14 +11,16 @@ class BaseModel(object):
 
 class User(BaseModel):
 
-    user_id = None
-    username = ''
-    email = ''
-    nickname = ''
-    first_name = ''
-    last_name = ''
-    active = True
-    cars = []
+    def __init__(self, user_id, username, nickname, first_name, last_name, email, cars=[]):
+        self.user_id = user_id
+        self.active = True
+        self.date_created = datetime.now()
+        self.username = username
+        self.nickname = nickname
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.cars = cars
 
     def __repr__(self):
         return '<User {} - {}>'.format(
@@ -28,27 +30,11 @@ class User(BaseModel):
 
 class Car(BaseModel):
 
-    plate_number = ''
-    model = ''
+    def __init__(self, plate_number, model):
+        self.plate_number = plate_number
+        self.model = model
+        self.active = True
 
     def __repr__(self):
         return '<Car {} - {}>'.format(
             self.model, self.plate_number)
-
-
-#  class Pair(Base):
-#     __tablename__ = 'pairs'
-
-#     first_user_id = Column(
-#         Integer, ForeignKey('users.user_id'))
-#     first_user = relationship('User', foreign_keys=[first_user_id])
-
-#     second_user_id = Column(
-#         Integer, ForeignKey('users.user_id'))
-#     second_user = relationship('User', foreign_keys=[second_user_id])
-
-#     count = Column(Integer, default=0)
-
-#     def __repr__(self):
-#         return '<Pair {} <-> {} - {}>'.format(
-#             self.first_user.id, self.second_user.id, self.count)

@@ -1,8 +1,9 @@
 from mattermostdriver import Driver
-from tools import utils, driver, user_collection
+from tools import utils, driver, user_collection, models
 import asyncio
 import json
 import re
+from datetime import datetime
 
 PLATE_NUMBER_PATTERN = r'(ایران|ايران)[\s]*[\d]{2} [\d]{2}[\w]{1}[\d]{3}'
 
@@ -51,7 +52,8 @@ def sample_handler(message_string):
         items = message_content.split()
 
         if len(items) != 4:
-            send_message(channel,"الگویی که وارد کردی درست نیست \r\n `مثال: register پژو ایران۱۱ ۱۱ب۱۱۱`")
+            send_message(
+                channel, "الگویی که وارد کردی درست نیست \r\n `مثال: register پژو ایران۱۱ ۱۱ب۱۱۱`")
             return
 
         command = items[0]
@@ -79,6 +81,23 @@ def register(channel, user, model, plate_number):
                             پلاک ماشین: {}
                             '''.format(
         model, plate_number))
+
+    found_user = user_collection.find_one(filter={'user_id': user['id']})
+
+    if found_user == None:
+        new_user = models.User(user['id'],
+                               user['username'],
+                               user['nickname'],
+                               user['first_name'],
+                               user['last_name'],
+                               user['email'])
+
+        new_car = models.Car(plate_number, model)
+
+        new_user.cars.append(new_car)
+
+        user_collection.insert_one(new_user.__dict__)
+        return
 
 
 def send_message(channel, message):
