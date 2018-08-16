@@ -45,7 +45,7 @@ def sample_handler(message_string):
 
     message_content = post['message'].lower()
 
-    if message_content is 'register':
+    if message_content == 'register':
         print('getting registered!')
         return
 
