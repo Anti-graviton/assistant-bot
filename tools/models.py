@@ -18,13 +18,22 @@ class User(BaseModel):
     first_name = ''
     last_name = ''
     active = True
-    plate_number = ''
+    cars = []
 
     def __repr__(self):
-        return '<User {} - {} - {}>'.format(
+        return '<User {} - {}>'.format(
             self.user_id,
-            'Active' if self.active else 'Inactive',
-            self.plate_number)
+            'Active' if self.active else 'Inactive')
+
+
+class Car(BaseModel):
+
+    plate_number = ''
+    model = ''
+
+    def __repr__(self):
+        return '<Car {} - {}>'.format(
+            self.model, self.plate_number)
 
 
 #  class Pair(Base):

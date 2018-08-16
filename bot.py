@@ -1,7 +1,8 @@
 from mattermostdriver import Driver
-from tools import utils, driver
+from tools import utils, driver, user_collection
 import asyncio
 import json
+import re
 
 PLATE_NUMBER_PATTERN = r'(ایران|ايران)[\s]*[\d]{2} [\d]{2}[\w]{1}[\d]{3}'
 
@@ -12,15 +13,6 @@ def main():
     driver.login()
     driver.users.get_user('me')
     print("Successfully authenticated.")
-
-    print("Retrieving Coffee Buddies participants...")
-    team_name = 'ITTest'
-    channel_name = 'town-square'
-    members = utils.get_channel_members(driver, team_name, channel_name)
-    print("Successfully retrieved Coffee Buddies participants.")
-
-    print("Preparing participants database...")
-    utils.create_users(members)
 
     driver.init_websocket(sample_handler)
 
@@ -55,17 +47,38 @@ def sample_handler(message_string):
 
     message_content = post['message'].lower()
 
-    if message_content == 'register':
+    if message_content.startswith('register'):  # register model plate_number
+        items = message_content.split()
+
+        if len(items) != 4:
+            send_message(channel,"الگویی که وارد کردی درست نیست \r\n `مثال: register پژو ایران۱۱ ۱۱ب۱۱۱`")
+            return
+
+        command = items[0]
+        model = items[1]
+        plate_number = items[2]+" "+items[3]
+
         user = driver.users.get_user(post['user_id'])
-        register(channel, user)
+
+        register(channel, user, model, plate_number)
         return
 
-    send_message(channel, 'sorry, I did not understand your command')
+    send_message(channel, 'ببخشید، متوجه نشدم چی گفتی')
 
 
-def register(channel, user):
-    send_message(channel, 'we will do something here later')
-    pass
+def register(channel, user, model, plate_number):
+
+    valid_car_num = re.match(PLATE_NUMBER_PATTERN, plate_number)
+
+    if not valid_car_num:
+        send_message(channel, "شماره پلاک صحیح نیست! دوباره امتحان کن")
+        return
+
+    send_message(channel, '''
+                            مدل ماشین: {}
+                            پلاک ماشین: {}
+                            '''.format(
+        model, plate_number))
 
 
 def send_message(channel, message):
