@@ -1,4 +1,4 @@
-from .secrets import email, password
+import os
 
 BOT_URL = 'http://172.16.30.11:8065/api/v4'  # with 'http://' and with '/api/v3' path
 BOT_LOGIN = email
@@ -8,3 +8,5 @@ BOT_TOKEN = None  # or '<bot-personal-access-token>' if you have set bot persona
 SSL_VERIFY = False
 DEBUG = False
 PLUGINS = ['plugins']
+
+os.environ['MATTERMOST_BOT_SETTINGS_MODULE'] = 'settings.settings'
