@@ -1,6 +1,5 @@
 from enum import Enum
 from datetime import datetime
-from bson import ObjectId
 
 
 class Activity(Enum):
@@ -10,7 +9,8 @@ class Activity(Enum):
 
 
 class ActivityLog:
-    def __init__(self, activity: Activity, activity_time: datetime, detail: object = None):
+    def __init__(self, activity: Activity, activity_time: datetime,
+                 detail: object = None):
         self.activity = activity
         self.activity_time = activity_time
         self.detail = detail
@@ -38,7 +38,9 @@ class MongoEntity(object):
 
 class User(MongoEntity):
 
-    def __init__(self, user_id, username, phone_number: str = None, first_name: str = None, last_name: str = None, car: Car=None):
+    def __init__(self, user_id, username, phone_number: str = None,
+                 first_name: str = None, last_name: str = None,
+                 car: Car=None):
         super(User, self).__init__()
         self.mattermost_id = user_id
         self.username = username
