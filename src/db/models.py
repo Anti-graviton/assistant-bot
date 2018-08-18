@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from enum import Enum
 from datetime import datetime
 
@@ -32,22 +34,22 @@ class MongoEntity(object):
 
     def __init__(self):
         # _id will be automatically added by PyMongo
-        self.date_created = datetime.now()
-        self.date_modified = None
+        self.created_on = datetime.now()
+        self.modified_on = None
 
 
 class User(MongoEntity):
 
-    def __init__(self, user_id, username, phone_number: str = None,
-                 first_name: str = None, last_name: str = None,
-                 car: Car=None):
+    def __init__(self, user_id, username, email: str, phone_number: str = None,
+                 first_name: str = None, last_name: str = None, car: Car=None):
         super(User, self).__init__()
-        self.mattermost_id = user_id
+        self.user_id = user_id
         self.username = username
+        self.email = email
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
         self.car = car
 
     def __repr__(self):
-        return '<User {} - {}>'.format(self.mattermost_id, self.username)
+        return '<User {} - {}>'.format(self.id, self.username)
