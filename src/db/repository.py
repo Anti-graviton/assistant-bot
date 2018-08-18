@@ -1,18 +1,29 @@
+# -*- coding: utf-8 -*-
+
 from pymongo import MongoClient
 from datetime import datetime
+from .models import User
+from .utils import todict
 
 
 class UserRepository(object):
 
     def __init__(self):
-        client = MongoClient('localhost:27017')  # ToDo use connection config
+        client = MongoClient('hosseint-pc:27017')  # ToDo use connection config
         self.collection = client.assistant_bot.users
 
-    def add_user(self, user):
-        self.collection.insert_one(user.__dict__)
+    def add_user(self, user: User):
+        self.collection.insert_one(todict(user))
+    
+    def find_user(self, user_id):
+        user = self.collection.find_one({'user_id': user_id})
 
-    def does_user_exist(self, user_id):
-        return self.collection.find_one({"user_id": user_id}) is None
+        return User(user['user_id'], user['username'], user['email'], user['phone_number'],
+                    user['first_name'], user['last_name'], user['car'])\
+            if user is not None else None
+
+    def has_car(self, user_id):
+        return self.find_user(user_id).car is not None
 
     # ToDo revisit method for feasibilty
     def does_car_already_registered(self, plate_number):
