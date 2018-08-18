@@ -106,6 +106,9 @@ venv.bak/
 # editors
 .idea/
 .vscode/
+.vs/
+*.sln
+*.pyproj[.user]
 
 # secrets
 src/settings/secrets.yml
