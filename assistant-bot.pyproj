@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{522be439-cbc5-46b3-9201-24ff88d4ed9f}</ProjectGuid>
     <ProjectHome />
-    <StartupFile />
+    <StartupFile>src\data_base\data_access.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -23,15 +23,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\bot.py" />
+    <Compile Include="src\data_base\data_access.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\data_base\data_model.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\plugins\lottery.py" />
     <Compile Include="src\plugins\__init__.py" />
-    <Compile Include="src\settings\secrets.py" />
     <Compile Include="src\settings\settings.py" />
     <Compile Include="src\settings\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src" />
-    <Folder Include="src\data_access\" />
+    <Folder Include="src\data_base\" />
     <Folder Include="src\plugins" />
     <Folder Include="src\settings" />
   </ItemGroup>
