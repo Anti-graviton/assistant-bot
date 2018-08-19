@@ -7,8 +7,6 @@ from .utils import ensure_user_exist
 from db.repository import UserRepository
 
 
-
-
 @respond_to('^reg\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
@@ -32,7 +30,7 @@ def withdraw(message, user):
     message.send("انصراف از قرعه‌کشی ثبت شد")
 
 
-@respond_to('^lscar\s*$', re.IGNORECASE)
+@respond_to('^mycar\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
 def remove_car(message, user):
@@ -47,13 +45,9 @@ def remove_car(message, user):
     message.send("اطلاعات ماشین حذف شد")
 
 
-@respond_to('^addcar [\w\d], [\w\d]$', re.IGNORECASE)
+@respond_to('^addcar ([\w\s\d]+) - ((?:ایران|ايران|iran|ir)[\s]*[\d]{2} [\d]{2}[\w]{1}[\d]{3})$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
-def add_car(message, user):
-    UserRepository().add_car(user.user_id, "toyota", "iran44")
+def add_car(message, user, model, plate_number, *args, **kwargs):
+    UserRepository().add_car(user.user_id, model, plate_number)
     message.send("اطلاعات ماشین ثبت شد")
-
-
-def default_reply(message):
-    message.send("default")
