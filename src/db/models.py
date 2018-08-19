@@ -44,8 +44,8 @@ class MongoEntity(object):
 class User(MongoEntity):
 
     def __init__(self, user_id, username, email: str, phone_number: str = None,
-                 first_name: str = None, last_name: str = None, car: Car = None,
-                 participated=False):
+                 first_name: str = None, last_name: str = None,
+                 car: Car = None, participated=False):
         super(User, self).__init__()
         self.user_id = user_id
         self.username = username
@@ -60,8 +60,9 @@ class User(MongoEntity):
     @staticmethod
     def from_dict(user):
         return User(user['user_id'], user['username'], user['email'],
-                    user.get('phone_number'), user['first_name'], user['last_name'],
-                    Car.from_dict(user.get('car')), user.get('participated'))
+                    user.get('phone_number'), user['first_name'],
+                    user['last_name'], Car.from_dict(user.get('car')),
+                    user.get('participated'))
 
     def __repr__(self):
         return '<User {} - {}>'.format(self.id, self.username)

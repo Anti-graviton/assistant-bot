@@ -7,7 +7,8 @@ from db.models import User
 
 class ExtendedMessage(Message):
     def __init__(self, message: Message):
-        super(ExtendedMessage, self).__init__(message._client, message._body, message._pool)
+        super(ExtendedMessage, self).__init__(message._client,
+                                              message._body, message._pool)
 
     def get_user_id(self):
         return self._body['data']['post']['user_id']

@@ -2,7 +2,8 @@
 import sys
 import logging
 from settings import settings
-from mmpy_bot.bot import Bot, MattermostClient, PluginsManager, MessageDispatcher
+from mmpy_bot.bot import Bot, MattermostClient, PluginsManager,\
+    MessageDispatcher
 
 
 logging.basicConfig(**{
@@ -27,4 +28,3 @@ class AssistantBot(Bot):
 
 if __name__ == "__main__":
     AssistantBot().run()
-

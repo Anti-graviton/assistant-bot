@@ -33,7 +33,7 @@ def withdraw(message, user):
 @respond_to('^mycar\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
-def remove_car(message, user):
+def mycar(message, user):
     message.send(user.car.__repr__() if user.car is not None else 'پوچ!')
 
 
@@ -45,7 +45,8 @@ def remove_car(message, user):
     message.send("اطلاعات ماشین حذف شد")
 
 
-@respond_to('^addcar ([\w\s\d]+) - ((?:ایران|ايران|iran|ir)[\s]*[\d]{2} [\d]{2}[\w]{1}[\d]{3})$', re.IGNORECASE)
+@respond_to('^addcar ([\w\s\d]+) - ((?:ایران|ايران|iran|ir)[\s]*[\d]{2} '
+            '[\d]{2}[\w]{1}[\d]{3})$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
 def add_car(message, user, model, plate_number, *args, **kwargs):

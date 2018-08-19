@@ -14,7 +14,7 @@ class UserRepository(object):
 
     def add_user(self, user: User):
         self.collection.insert_one(todict(user))
-    
+
     def find_user(self, user_id):
         user = self.collection.find_one({'user_id': user_id})
         return User.from_dict(user) if user is not None else None
@@ -26,7 +26,7 @@ class UserRepository(object):
         return self.collection.update_one({'user_id': user_id},
                                           {'$unset': {'car': ''}})
 
-    def add_car(self, user_id, model:str, plate_number: str):
+    def add_car(self, user_id, model: str, plate_number: str):
         car = Car(plate_number, model)
         return self.collection.update_one({'user_id': user_id},
                                           {'$set': {'car': car.__dict__}})
@@ -40,11 +40,6 @@ class UserRepository(object):
     def __update_participation(self, user_id: str, value: bool):
         self.collection.update_one({'user_id': user_id},
                                    {'$set': {'participated': value}})
-
-    # ToDo revisit method for feasibilty
-    def does_car_already_registered(self, plate_number):
-        filter = {"car.plate_number": plate_number}
-        return self.collection.find_one(filter) is not None
 
     # ToDo revisit logic
     def update_user_state(self, user_id, state):
