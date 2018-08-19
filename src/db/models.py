@@ -59,7 +59,8 @@ class User(MongoEntity):
 
     @staticmethod
     def from_dict(user):
-        return User(user['user_id'], user['username'], user['email'],
+        user_id = user.get('id') or user.get('user_id')
+        return User(user_id, user['username'], user['email'],
                     user.get('phone_number'), user['first_name'],
                     user['last_name'], Car.from_dict(user.get('car')),
                     user.get('participated'))
