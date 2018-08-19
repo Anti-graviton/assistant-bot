@@ -8,5 +8,24 @@ BOT_TOKEN = None  # or '<bot-personal-access-token>' if you have set bot persona
 SSL_VERIFY = False
 DEBUG = False
 PLUGINS = ['plugins']
+DEFAULT_REPLY = '''
+### نمی‌فهمم چی می‌گی!
+من یه ربات دون‌پایه‌ام! لطفا عین همین شیوه‌ای که این پایین نوشته با من صحبت کن.
+
+|command|معنی|
+|------|-----------------|
+|reg  ‌ |‌ثبت‌نام در قرعه‌کشی|
+|unreg |انصراف از قرعه‌کشی|
+|addcar| اضافه کردن ماشین|
+|rmcar |حذف ماشین        |
+|mycar |اطلاعات ماشین     |
+
+برای اضافه کردن ماشین یکم باید تمرکز کنی.
+بعد از دستور باید دو تا مقدار بهم بدی که با خط تیره (-) از هم جدا شده‌ان.
+اولی مدل ماشین و دومی شماره پلاکه.
+مثال:
+addcar pride - iran99 99b999
+addcar پراید - ایران۹۹ ۹۹ب۹۹۹
+'''
 
 os.environ['MATTERMOST_BOT_SETTINGS_MODULE'] = 'settings.settings'

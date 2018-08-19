@@ -7,34 +7,6 @@ from .utils import ensure_user_exist
 from db.repository import UserRepository
 
 
-@respond_to('^(?!(reg|unreg|addcar|rmcar|lscar)).*$', re.IGNORECASE)
-@allow_only_direct_message()
-@ensure_user_exist()
-def uknown(message, *args, **kwargs):
-    text = '''
-### نمی‌فهمم چی می‌گی!
-من یه ربات دون‌پایه‌ام! لطفا عین همین شیوه‌ای که این پایین نوشته با من صحبت کن.
-
-|command|معنی|
-|------|-----------------|
-|reg  ‌ |‌ثبت‌نام در قرعه‌کشی|
-|unreg |انصراف از قرعه‌کشی|
-|addcar| اضافه کردن ماشین|
-|rmcar |حذف ماشین        |
-|lscar |اطلاعات ماشین     |
-
-برای اضافه کردن ماشین یکم باید تمرکز کنی.
-بعد از دستور باید دو تا مقدار بهم بدی که با خط تیره (-) از هم جدا شده‌ان.
-اولی مدل ماشین و دومی شماره پلاکه.
-مثال:
-addcar pride - iran99 99b999
-addcar پراید - ایران۹۹ ۹۹ب۹۹۹
-
-اگر هم مشکلی داشتی، به حسین یا ابوالفضل بگو:
-[@hossein.t](http://fanype.fanap.plus/fanap/messages/@hossein.t)
-[@abolfazl](http://fanype.fanap.plus/fanap/messages/@abolfazl)
-'''
-    message.send(text)
 
 
 @respond_to('^reg\s*$', re.IGNORECASE)
