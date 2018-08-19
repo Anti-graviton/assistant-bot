@@ -2,7 +2,7 @@
 
 from pymongo import MongoClient
 from datetime import datetime
-from .models import User
+from .models import User, Car
 from .utils import todict
 
 
@@ -17,13 +17,29 @@ class UserRepository(object):
     
     def find_user(self, user_id):
         user = self.collection.find_one({'user_id': user_id})
-
-        return User(user['user_id'], user['username'], user['email'], user['phone_number'],
-                    user['first_name'], user['last_name'], user['car'])\
-            if user is not None else None
+        return User.from_dict(user) if user is not None else None
 
     def has_car(self, user_id):
         return self.find_user(user_id).car is not None
+
+    def remove_car(self, user_id):
+        return self.collection.update_one({'user_id': user_id},
+                                          {'$unset': {'car': ''}})
+
+    def add_car(self, user_id, model:str, plate_number: str):
+        car = Car(plate_number, model)
+        return self.collection.update_one({'user_id': user_id},
+                                          {'$set': {'car': car.__dict__}})
+
+    def participate(self, user_id):
+        self.__update_participation(user_id, True)
+
+    def withdraw(self, user_id):
+        self.__update_participation(user_id, False)
+
+    def __update_participation(self, user_id: str, value: bool):
+        self.collection.update_one({'user_id': user_id},
+                                   {'$set': {'participated': value}})
 
     # ToDo revisit method for feasibilty
     def does_car_already_registered(self, plate_number):
