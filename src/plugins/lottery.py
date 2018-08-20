@@ -27,7 +27,9 @@ def register(message, user):
 def withdraw(message, user):
     if user.participated:
         UserRepository().withdraw(user.user_id)
-    message.send("انصراف از قرعه‌کشی ثبت شد")
+        message.send("انصراف از قرعه‌کشی ثبت شد")
+    else:
+        message.send("گرفتی ما رو؟! اصلا ثبت‌نام نکردی که")
 
 
 @respond_to('^mycar\s*$', re.IGNORECASE)
