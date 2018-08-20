@@ -2,7 +2,7 @@
 
 import re
 from mmpy_bot.bot import respond_to
-from mmpy_bot.utils import allow_only_direct_message
+from mmpy_bot.utils import allow_only_direct_message, allowed_users
 from .utils import ensure_user_exist
 from db.repository import UserRepository
 
@@ -52,3 +52,11 @@ def remove_car(message, user):
 def add_car(message, user, model, plate_number, *args, **kwargs):
     UserRepository().add_car(user.user_id, model, plate_number)
     message.send("اطلاعات ماشین ثبت شد")
+
+@respond_to('^ls\s*$', re.IGNORECASE)
+@allow_only_direct_message()
+@allowed_users('hossein.t', 'abolfazl')
+def list_participants(message):
+    users = UserRepository().find_participants()
+    usernames = '\n'.join(map(lambda u: u.username, users))
+    message.send(usernames)
