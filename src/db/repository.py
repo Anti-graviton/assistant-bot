@@ -9,7 +9,7 @@ from .utils import todict
 class UserRepository(object):
 
     def __init__(self):
-        client = MongoClient('hosseint-pc:27017')  # ToDo use connection config
+        client = MongoClient('localhost:27017')  # ToDo use connection config
         self.collection = client.assistant_bot.users
 
     def add_user(self, user: User):
