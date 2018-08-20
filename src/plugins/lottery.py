@@ -60,5 +60,13 @@ def add_car(message, user, model, plate_number, *args, **kwargs):
 @allowed_users('hossein.t', 'abolfazl')
 def list_participants(message):
     users = UserRepository().find_participants()
+    usernames = '\n'.join(map(lambda u: "%s, %s" % (u.username, u.car.plate_number), users))
+    message.send(usernames)
+
+@respond_to('^la\s*$', re.IGNORECASE)
+@allow_only_direct_message()
+@allowed_users('hossein.t', 'abolfazl')
+def list_participants(message):
+    users = UserRepository().get_users()
     usernames = '\n'.join(map(lambda u: u.username, users))
     message.send(usernames)

@@ -19,6 +19,11 @@ class UserRepository(object):
         user = self.collection.find_one({'user_id': user_id})
         return User.from_dict(user) if user is not None else None
 
+    def get_users(self):
+        cursor = self.collection.find({})
+        users = map(lambda u: User.from_dict(u), cursor)
+        return list(users)
+
     def find_participants(self):
         cursor = self.collection.find({'participated': True})
         users = map(lambda u: User.from_dict(u), cursor)
