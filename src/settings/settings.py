@@ -1,9 +1,9 @@
 import os
-from .secrets import email, password
+# from .secrets import email, password
 
 BOT_URL = 'http://172.16.30.11:8065/api/v4'
-BOT_LOGIN = email
-BOT_PASSWORD = password
+BOT_LOGIN = 'parisa'
+BOT_PASSWORD = '123456'
 BOT_TEAM = 'ITTest'
 BOT_TOKEN = None
 SSL_VERIFY = False

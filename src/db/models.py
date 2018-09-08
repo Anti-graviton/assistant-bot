@@ -3,19 +3,38 @@
 from enum import Enum
 from datetime import datetime
 
-
 class Activity(Enum):
-    WIN = 1
-    WITHDRAW = 2
-    EDIT_CAR = 3
-
+    UNKNOWN = 0
+    WON = 1
+    UNREGISTERED = 2
+    REGISTERED = 3
 
 class ActivityLog:
     def __init__(self, activity: Activity, activity_time: datetime,
-                 detail: object = None):
+                 event_id, user_id):
         self.activity = activity
         self.activity_time = activity_time
-        self.detail = detail
+        self.event_id = event_id
+        self.user_id = user_id
+    @staticmethod
+    def from_dict(activity_log):
+        return ActivityLog(activity_log["activity"], activity_log["activity_time"],
+                           activity_log["event_id"], activity_log["event_id"])
+
+class Event:
+    def __init__(self, from_time, to_time, event_id, created_on, is_active):
+        self.from_time = from_time
+        self.to_time = to_time
+        self.is_active = is_active
+        self.event_id = event_id
+        self.created_on = created_on
+    @staticmethod
+    def from_dict(event:dict):
+        return Event(event.get('from_time'),
+                     event.get('to_time'), event.get('event_id'), event.get('creted_on'),
+                     event.get('is_active'))
+    def __repr__(self):
+        return '<Event: {} - {} - {} >'.format(self.event_id, self.from_time,self.to_time)
 
 
 class Car:
@@ -32,11 +51,23 @@ class Car:
     def __repr__(self):
         return '{} - {}'.format(self.model, self.plate_number)
 
+class UserState:
+    def __init__ (self, status, event_id):
+        self.event_id = event_id
+        self.status = status
+        self.created_on=datetime.now
+
+    @staticmethod
+    def from_dict(user_state: dict):
+        return UserState(user_state.get('event_id'), user_state.get('status'),user_state.get('created_on'))\
+            if user_state is not None else None
+
+    def __repr__(self):
+        return repr((self.event_id, self.status, self.created_on))
 
 class MongoEntity(object):
 
     def __init__(self):
-        # _id will be automatically added by PyMongo
         self.created_on = datetime.now()
         self.modified_on = None
 
@@ -45,7 +76,7 @@ class User(MongoEntity):
 
     def __init__(self, user_id, username, email: str, phone_number: str = None,
                  first_name: str = None, last_name: str = None,
-                 car: Car = None, participated=False):
+                 car: Car = None, user_state: [UserState] = []):
         super(User, self).__init__()
         self.user_id = user_id
         self.username = username
@@ -54,16 +85,13 @@ class User(MongoEntity):
         self.first_name = first_name
         self.last_name = last_name
         self.car = car
-        self.participated = participated
-        # self.activities = None
+        self.user_state = user_state
 
     @staticmethod
     def from_dict(user):
         user_id = user.get('id') or user.get('user_id')
         return User(user_id, user['username'], user['email'],
                     user.get('phone_number'), user['first_name'],
-                    user['last_name'], Car.from_dict(user.get('car')),
-                    user.get('participated'))
-
+                    user['last_name'], Car.from_dict(user.get('car')), user['user_state'])
     def __repr__(self):
-        return '<User {} - {}>'.format(self.id, self.username)
+        return '<User {} - {}>'.format(self.user_id, self.username)

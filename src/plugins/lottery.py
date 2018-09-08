@@ -4,18 +4,25 @@ import re
 from mmpy_bot.bot import respond_to
 from mmpy_bot.utils import allow_only_direct_message, allowed_users
 from .utils import ensure_user_exist
-from db.repository import UserRepository
+from db.repository import UserRepository, EventRepository
+from db.models import Activity
 
 
 @respond_to('^reg\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
 def register(message, user):
+    active_event = EventRepository().find_active_event()
+    if active_event is None:
+        return message.send("در حال حاضر قرعه کشی فعالی وجود ندارد")
+
     if user.car is None:
         return message.send("لطفا یک ماشین تعریف کنید")
 
-    if not user.participated:
-        UserRepository().participate(user.user_id)
+    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == Activity.REGISTERED.name, user.user_state))
+
+    if  (len( state_for_active_event) <1 ):
+        UserRepository().participate(user.user_id,active_event.active_event_id)
         message.react(":+1:")
     else:
         message.send("خیالت راحت، ثبت‌نام کردی!")
@@ -24,9 +31,16 @@ def register(message, user):
 @respond_to('^unreg\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
+
 def withdraw(message, user):
-    if user.participated:
-        UserRepository().withdraw(user.user_id)
+
+    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == Activity.REGISTERED.name, user.user_state))[0]
+    active_event = EventRepository().find_active_event()
+    if active_event is None:
+        return message.send("در حال حاضر رویداد فعالی وجود ندارد")
+        
+    if len( state_for_active_event) > 0 :
+        UserRepository().withdraw(user.user_id,active_event.active_event_id)
         message.send("انصراف از قرعه‌کشی ثبت شد")
     else:
         message.send("گرفتی ما رو؟! اصلا ثبت‌نام نکردی که")
@@ -59,14 +73,52 @@ def add_car(message, user, model, plate_number, *args, **kwargs):
 @allow_only_direct_message()
 @allowed_users('hossein.t', 'abolfazl')
 def list_participants(message):
-    users = UserRepository().find_participants()
+    active_event_id=EventRepository().find_active_event()
+    users = UserRepository().find_participants(active_event_id)
     usernames = '\n'.join(map(lambda u: "%s, %s" % (u.username, u.car.plate_number), users))
     message.send(usernames)
 
 @respond_to('^la\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users('hossein.t', 'abolfazl')
-def list_participants(message):
+def list_users(message):
     users = UserRepository().get_users()
     usernames = '\n'.join(map(lambda u: u.username, users))
     message.send(usernames)
+
+@respond_to('^addevent\s*$',re.IGNORECASE)
+@allow_only_direct_message()
+@allowed_users('hossein.t','abolfazl')
+def add_event(message):
+    active_event=EventRepository().find_active_event()
+    if active_event is None:
+        EventRepository().add_event(48)
+        message.send("قرعه کشی جدید ثبت گردید")
+
+    else:
+        message.send("در حال حاضر قرعه کشی فعال وجود دارد و شما نمی توانید قرعه کشی دیگری ثبت نمایید")
+
+@respond_to('^myevent\s*$', re.IGNORECASE)
+@allow_only_direct_message()
+@allowed_users('hossein.t','abolfazl')
+def get_events(message):
+    event = EventRepository().find_active_event()
+    if event is not None:
+       
+       message.send(event.__repr__())
+    else:
+        message.send('قرعه کشی فعالی وجود ندارد')
+
+@respond_to('^deactiveevent\s*$',re.IGNORECASE)
+@allow_only_direct_message()
+@allowed_users('hossein.t','abolfazl')
+def delete_event(message):
+    event=EventRepository().deactive_event()
+    if event is True:
+        message.send('قرعه کشی با موفقیت غیرفعال شد')
+    else:
+        message.send('قرعه کشی فعالی وجود ندارد')
+
+
+
+

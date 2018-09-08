@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from pymongo import MongoClient
-from datetime import datetime
-from .models import User, Car
+from datetime import datetime, timedelta
+from .models import User, Car, Event, UserState, Activity
 from .utils import todict
 
 
@@ -11,6 +11,7 @@ class UserRepository(object):
     def __init__(self):
         client = MongoClient('localhost:27017')  # ToDo use connection config
         self.collection = client.assistant_bot.users
+
 
     def add_user(self, user: User):
         self.collection.insert_one(todict(user))
@@ -24,8 +25,10 @@ class UserRepository(object):
         users = map(lambda u: User.from_dict(u), cursor)
         return list(users)
 
-    def find_participants(self):
-        cursor = self.collection.find({'participated': True})
+    def find_participants(self,event_id):
+        
+        user_filter={'user_state':{'$elemMatch':{'event_id':event_id, 'action':Activity.REGISTERED.name}}}
+        cursor = self.collection.find(user_filter)
         users = map(lambda u: User.from_dict(u), cursor)
         return list(users)
 
@@ -40,34 +43,52 @@ class UserRepository(object):
         car = Car(plate_number, model)
         return self.collection.update_one({'user_id': user_id},
                                           {'$set': {'car': car.__dict__}})
+            
+    def participate(self, user_id, active_event_id):
+        self.__update_user_state (user_id, Activity.REGISTERED, active_event_id)
 
-    def participate(self, user_id):
-        self.__update_participation(user_id, True)
+    def withdraw(self, user_id, active_event_id):
+        self.__update_user_state (user_id, Activity.UNREGISTERED, active_event_id)
 
-    def withdraw(self, user_id):
-        self.__update_participation(user_id, False)
+    def __update_user_state(self, user_id: str, state: Activity, active_event_id: str):
 
-    def __update_participation(self, user_id: str, value: bool):
-        self.collection.update_one({'user_id': user_id},
-                                   {'$set': {'participated': value}})
-
-    # ToDo revisit logic
-    def update_user_state(self, user_id, state):
-        event_filter = {"from_time": {"$lte": datetime.now()}, "to_time": {
-            "$gte": datetime.now()}, "is_active": 1}
-        active_event_id = self.collection.find_one(event_filter)
-
-        if active_event_id is not None:
-            res = self.collection.update_one(
-                {"user_id": user_id,
-                 "user_state.event_id": active_event_id['identifier']},
+ 
+        user_filter={"user_id":user_id, "user_state":{'$elemMatch': {'event_id':active_event_id}}}
+        res = self.collection.update_one(user_filter,
                 {"$set": {"user_state.$.activity_time": datetime.now(),
-                          "user_state.$.action": state}})
+                          "user_state.$.action":state.name}})
 
         if res.matched_count < 1:
             res = self.collection.update_one(
                 {"user_id": user_id},
                 {"$push": {"user_state":
                            {"activity_time": datetime.now(),
-                            "action": state,
-                            "event_id": active_event_id['identifier']}}})
+                            "action": state.name,
+                            "event_id": active_event_id}}})
+class EventRepository(object):
+
+    def __init__(self):
+        client = MongoClient('localhost:27017')
+        self.collection = client.test.Event
+
+    def find_active_event(self):
+        now=datetime.now()
+        event_filter ={'$and': [{'is_active':True},{'from_time':{'$lte':now}},{'to_time':{'$gte':now}}]}
+        active_event = self.collection.find_one(event_filter)
+        return Event.from_dict(active_event) if active_event is not None else None
+
+    def add_event(self, duration):
+        now = datetime.now()
+        event_id = str(now.year)+'-'+str(now.month)+ '-'+str(now.day)+'-'+str(now.hour)+str(now.minute)+str(now.second)+str(now.microsecond)
+        event = Event(now, now+timedelta(hours=duration), event_id, datetime.now(), True)
+        self.collection.insert_one(todict(event))
+
+    def deactive_event(self):
+        event_filter={"is_active":True}
+        update={"$set":{"is_active":False}}
+        result=self.collection.update_one(event_filter,update)
+        if result.matched_count>0:
+            return True
+        else:
+            return False
+
