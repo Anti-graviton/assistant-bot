@@ -9,7 +9,7 @@ from db.models import Activity
 from settings.settings import ADMINS
 
 
-@respond_to('^reg\s*$', re.IGNORECASE)
+@respond_to(r'^reg\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
 def register(message, user):
@@ -29,7 +29,7 @@ def register(message, user):
         message.send("خیالت راحت، ثبت‌نام کردی!")
 
 
-@respond_to('^unreg\s*$', re.IGNORECASE)
+@respond_to(r'^unreg\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
 def withdraw(message, user):
@@ -46,14 +46,14 @@ def withdraw(message, user):
         message.send("گرفتی ما رو؟! اصلا ثبت‌نام نکردی که")
 
 
-@respond_to('^mycar\s*$', re.IGNORECASE)
+@respond_to(r'^mycar\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
 def mycar(message, user):
     message.send(user.car.__repr__() if user.car is not None else 'پوچ!')
 
 
-@respond_to('^rmcar\s*$', re.IGNORECASE)
+@respond_to(r'^rmcar\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
 def remove_car(message, user):
@@ -61,15 +61,15 @@ def remove_car(message, user):
     message.send("اطلاعات ماشین حذف شد")
 
 
-@respond_to('^addcar ([\w\s\d]+) - ((?:ایران|ايران|iran|ir)[\s]*[\d]{2} '
-            '[\d]{2}[\w]{1}[\d]{3})$', re.IGNORECASE)
+@respond_to(r'^addcar ([\w\s\d]+) - ((?:ایران|ايران|iran|ir)[\s]*[\d]{2} '
+            r'[\d]{2}[\w]{1}[\d]{3})$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_user_exist()
 def add_car(message, user, model, plate_number, *args, **kwargs):
     UserRepository().add_car(user.user_id, model, plate_number)
     message.send("اطلاعات ماشین ثبت شد")
 
-@respond_to('^ls\s*$', re.IGNORECASE)
+@respond_to(r'^ls\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
 def list_participants(message):
@@ -78,7 +78,8 @@ def list_participants(message):
     usernames = '\n'.join(map(lambda u: "%s, %s" % (u.username, u.car.plate_number), users))
     message.send(usernames)
 
-@respond_to('^la\s*$', re.IGNORECASE)
+
+@respond_to(r'^la\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
 def list_users(message):
@@ -86,7 +87,8 @@ def list_users(message):
     usernames = '\n'.join(map(lambda u: u.username, users))
     message.send(usernames)
 
-@respond_to('^lopen\s+(\d{1,2}(?:h|d))\s*$', re.IGNORECASE)
+
+@respond_to(r'^lopen\s+(\d{1,2}(?:h|d))\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
 def add_event(message):
@@ -98,7 +100,7 @@ def add_event(message):
         message.send("در حال حاضر قرعه کشی فعال وجود دارد و شما نمی توانید قرعه کشی دیگری ثبت نمایید")
 
 
-@respond_to('^lshow\s*$', re.IGNORECASE)
+@respond_to(r'^lshow\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
 def get_events(message):
@@ -109,7 +111,7 @@ def get_events(message):
         message.send('قرعه کشی فعالی وجود ندارد')
 
 
-@respond_to('^lclose\s*$',re.IGNORECASE)
+@respond_to(r'^lclose\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
 def delete_event(message):
