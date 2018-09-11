@@ -9,6 +9,7 @@ BOT_TOKEN = None
 SSL_VERIFY = False
 DEBUG = False
 PLUGINS = ['plugins']
+ADMINS = ['hossein.t', 'abolfazl']
 DEFAULT_REPLY = '''
 ### نمی‌فهمم چی می‌گی!
 من یه ربات دون‌پایه‌ام! لطفا عین همین شیوه‌ای که این پایین نوشته با من صحبت کن.
