@@ -6,12 +6,15 @@ from .models import User, Car, Event, UserState, Activity
 from .utils import todict
 
 
-class UserRepository(object):
-
+class MongoRepository(object):
     def __init__(self):
-        client = MongoClient('localhost:27017')  # ToDo use connection config
-        self.collection = client.assistant_bot.users
+        self.client = MongoClient('localhost:27017')  # ToDo use connection config
 
+
+class UserRepository(MongoRepository):
+    def __init__(self):
+        super().__init__()
+        self.collection = self.client.assistant_bot.users
 
     def add_user(self, user: User):
         self.collection.insert_one(todict(user))
@@ -25,8 +28,7 @@ class UserRepository(object):
         users = map(lambda u: User.from_dict(u), cursor)
         return list(users)
 
-    def find_participants(self,event_id):
-        
+    def find_participants(self, event_id):
         user_filter={'user_state':{'$elemMatch':{'event_id':event_id, 'action':Activity.REGISTERED.name}}}
         cursor = self.collection.find(user_filter)
         users = map(lambda u: User.from_dict(u), cursor)
@@ -51,8 +53,6 @@ class UserRepository(object):
         self.__update_user_state (user_id, Activity.UNREGISTERED, active_event_id)
 
     def __update_user_state(self, user_id: str, state: Activity, active_event_id: str):
-
- 
         user_filter={"user_id":user_id, "user_state":{'$elemMatch': {'event_id':active_event_id}}}
         res = self.collection.update_one(user_filter,
                 {"$set": {"user_state.$.activity_time": datetime.now(),
@@ -65,8 +65,9 @@ class UserRepository(object):
                            {"activity_time": datetime.now(),
                             "action": state.name,
                             "event_id": active_event_id}}})
-class EventRepository(object):
 
+
+class EventRepository(MongoRepository):
     def __init__(self):
         client = MongoClient('localhost:27017')
         self.collection = client.test.Event
@@ -91,4 +92,3 @@ class EventRepository(object):
             return True
         else:
             return False
-
