@@ -1,4 +1,4 @@
 -e git://github.com/attzonko/mmpy_bot.git#egg=mmpy_bot
 pyyaml
 pymongo
-virtualenv
+schedule
