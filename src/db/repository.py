@@ -2,7 +2,8 @@
 
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-from .models import User, Car, Event, UserState, Activity
+from .models import User, Car, Event, UserState
+from shared import State
 from .utils import todict
 
 
@@ -29,7 +30,7 @@ class UserRepository(MongoRepository):
         return list(users)
 
     def find_participants(self, event_id):
-        user_filter={'user_state':{'$elemMatch':{'event_id':event_id, 'action':Activity.REGISTERED.name}}}
+        user_filter={'user_state':{'$elemMatch':{'event_id':event_id, 'state':State.REGISTERED.name}}}
         cursor = self.collection.find(user_filter)
         users = map(lambda u: User.from_dict(u), cursor)
         return list(users)
@@ -47,23 +48,23 @@ class UserRepository(MongoRepository):
                                           {'$set': {'car': car.__dict__}})
             
     def participate(self, user_id, active_event_id):
-        self.__update_user_state (user_id, Activity.REGISTERED, active_event_id)
+        self.__update_user_state (user_id, State.REGISTERED, active_event_id)
 
     def withdraw(self, user_id, active_event_id):
-        self.__update_user_state (user_id, Activity.UNREGISTERED, active_event_id)
+        self.__update_user_state (user_id, State.UNREGISTERED, active_event_id)
 
-    def __update_user_state(self, user_id: str, state: Activity, active_event_id: str):
+    def __update_user_state(self, user_id: str, state: State, active_event_id: str):
         user_filter={"user_id":user_id, "user_state":{'$elemMatch': {'event_id':active_event_id}}}
         res = self.collection.update_one(user_filter,
-                {"$set": {"user_state.$.activity_time": datetime.now(),
-                          "user_state.$.action":state.name}})
+                {"$set": {"user_state.$.modified_on": datetime.now(),
+                          "user_state.$.state":state.name}})
 
         if res.matched_count < 1:
             res = self.collection.update_one(
                 {"user_id": user_id},
                 {"$push": {"user_state":
-                           {"activity_time": datetime.now(),
-                            "action": state.name,
+                           {"modified_on": datetime.now(),
+                            "state": state.name,
                             "event_id": active_event_id}}})
 
 
@@ -92,6 +93,3 @@ class EventRepository(MongoRepository):
             return True
         else:
             return False
-
-# usu=User("par","par.m","papar@fanap.plus")
-# print('here it is',UserRepository().add_user(usu))

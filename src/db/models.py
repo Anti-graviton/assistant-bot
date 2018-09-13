@@ -2,15 +2,11 @@
 
 from enum import Enum
 from datetime import datetime
+from shared import State
 
-class Activity(Enum):
-    UNKNOWN = 0
-    WON = 1
-    UNREGISTERED = 2
-    REGISTERED = 3
 
 class ActivityLog:
-    def __init__(self, activity: Activity, activity_time: datetime,
+    def __init__(self, activity: State, activity_time: datetime,
                  event_id, user_id):
         self.activity = activity
         self.activity_time = activity_time
@@ -52,21 +48,21 @@ class Car:
         return '{} - {}'.format(self.model, self.plate_number)
 
 class UserState:
-    def __init__ (self, status, event_id, created_on):
+    def __init__ (self, state, event_id, modified_on):
+        self.status = state
         self.event_id = event_id
-        self.status = status
-        self.created_on=datetime.now
+        self.modified_on=datetime.now
 
     @staticmethod
     def from_dict(user_state: dict):
         if user_state is not None:
-            user = UserState(user_state.get('status'), user_state.get('event_id'), user_state.get('created_on'))
+            user = UserState(user_state.get('state'), user_state.get('event_id'), user_state.get('modified_on'))
             return user
         else:
             return None
 
     def __repr__(self):
-        return repr((self.event_id, self.status, self.created_on))
+        return repr((self.event_id, self.status, self.modified_on))
 
 class MongoEntity(object):
 

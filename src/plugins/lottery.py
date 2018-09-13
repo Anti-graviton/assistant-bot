@@ -5,7 +5,7 @@ from mmpy_bot.bot import respond_to
 from mmpy_bot.utils import allow_only_direct_message, allowed_users
 from .utils import ensure_user_exist
 from db.repository import UserRepository, EventRepository
-from db.models import Activity
+from shared import State
 from settings.settings import ADMINS
 
 
@@ -20,7 +20,7 @@ def register(message, user):
     if user.car is None:
         return message.send("لطفا یک ماشین تعریف کنید")
     
-    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == Activity.REGISTERED.name, user.user_state)) if user.user_state is not None else []
+    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == State.REGISTERED.name, user.user_state))
 
     if  (len(state_for_active_event) <1 ):
         UserRepository().participate(user.user_id,active_event.event_id)
@@ -36,9 +36,9 @@ def withdraw(message, user):
     
     active_event = EventRepository().find_active_event()
     if active_event is None:
-        return message.send("در حال حاضر رویداد فعالی وجود ندارد")
+        return message.send("در حال حاضر قرعه کشی فعالی وجود ندارد")
         
-    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == Activity.REGISTERED.name, user.user_state))
+    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == State.REGISTERED.name, user.user_state))
 
     if len( state_for_active_event) > 0 :
         UserRepository().withdraw(user.user_id,active_event.event_id)
