@@ -52,15 +52,18 @@ class Car:
         return '{} - {}'.format(self.model, self.plate_number)
 
 class UserState:
-    def __init__ (self, status, event_id):
+    def __init__ (self, status, event_id, created_on):
         self.event_id = event_id
         self.status = status
         self.created_on=datetime.now
 
     @staticmethod
     def from_dict(user_state: dict):
-        return UserState(user_state.get('event_id'), user_state.get('status'),user_state.get('created_on'))\
-            if user_state is not None else None
+        if user_state is not None:
+            user = UserState(user_state.get('status'), user_state.get('event_id'), user_state.get('created_on'))
+            return user
+        else:
+            return None
 
     def __repr__(self):
         return repr((self.event_id, self.status, self.created_on))
@@ -92,6 +95,6 @@ class User(MongoEntity):
         user_id = user.get('id') or user.get('user_id')
         return User(user_id, user['username'], user['email'],
                     user.get('phone_number'), user['first_name'],
-                    user['last_name'], Car.from_dict(user.get('car')), user['user_state'])
+                    user['last_name'], Car.from_dict(user.get('car')), user.get('user_state'))
     def __repr__(self):
         return '<User {} - {}>'.format(self.user_id, self.username)

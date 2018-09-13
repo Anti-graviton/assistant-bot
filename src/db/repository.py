@@ -70,7 +70,7 @@ class UserRepository(MongoRepository):
 class EventRepository(MongoRepository):
     def __init__(self):
         client = MongoClient('localhost:27017')
-        self.collection = client.test.Event
+        self.collection = client.assistant_bot.events
 
     def find_active_event(self):
         now=datetime.now()
@@ -92,3 +92,6 @@ class EventRepository(MongoRepository):
             return True
         else:
             return False
+
+# usu=User("par","par.m","papar@fanap.plus")
+# print('here it is',UserRepository().add_user(usu))

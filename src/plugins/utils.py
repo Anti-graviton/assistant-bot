@@ -29,6 +29,7 @@ def ensure_user_exist():
             if user is None:
                 info = ext_message.get_user_info()
                 user = User.from_dict(info)
+                user.user_state=[]
                 repo.add_user(user)
 
             return func(ext_message, user, *args, **kw)

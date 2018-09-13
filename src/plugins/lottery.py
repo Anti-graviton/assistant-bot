@@ -19,11 +19,11 @@ def register(message, user):
 
     if user.car is None:
         return message.send("لطفا یک ماشین تعریف کنید")
+    
+    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == Activity.REGISTERED.name, user.user_state)) if user.user_state is not None else []
 
-    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == Activity.REGISTERED.name, user.user_state))
-
-    if  (len( state_for_active_event) <1 ):
-        UserRepository().participate(user.user_id,active_event.active_event_id)
+    if  (len(state_for_active_event) <1 ):
+        UserRepository().participate(user.user_id,active_event.event_id)
         message.react(":+1:")
     else:
         message.send("خیالت راحت، ثبت‌نام کردی!")
@@ -33,14 +33,15 @@ def register(message, user):
 @allow_only_direct_message()
 @ensure_user_exist()
 def withdraw(message, user):
-
-    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == Activity.REGISTERED.name, user.user_state))[0]
+    
     active_event = EventRepository().find_active_event()
     if active_event is None:
         return message.send("در حال حاضر رویداد فعالی وجود ندارد")
         
+    state_for_active_event = list(filter(lambda c: c['event_id'] == active_event.event_id and c['action'] == Activity.REGISTERED.name, user.user_state))
+
     if len( state_for_active_event) > 0 :
-        UserRepository().withdraw(user.user_id,active_event.active_event_id)
+        UserRepository().withdraw(user.user_id,active_event.event_id)
         message.send("انصراف از قرعه‌کشی ثبت شد")
     else:
         message.send("گرفتی ما رو؟! اصلا ثبت‌نام نکردی که")
@@ -88,13 +89,16 @@ def list_users(message):
     message.send(usernames)
 
 
-@respond_to(r'^lopen\s+(\d{1,2}(?:h|d))\s*$', re.IGNORECASE)
+@respond_to(r'^lopen\s+(\d{1,2})(h|d)\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
-def add_event(message):
+def add_event(message, duration, unit):
     active_event = EventRepository().find_active_event()
     if active_event is None:
-        EventRepository().add_event(48)
+        duration = int(duration)
+        if unit == "d":
+            duration = 24 * duration
+        EventRepository().add_event(duration)
         message.send("قرعه کشی جدید ثبت گردید")
     else:
         message.send("در حال حاضر قرعه کشی فعال وجود دارد و شما نمی توانید قرعه کشی دیگری ثبت نمایید")
