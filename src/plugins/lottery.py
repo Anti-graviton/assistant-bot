@@ -61,9 +61,11 @@ def remove_car(message, user):
 @respond_to(r'^addcar ([\w\s\d]+) - ((?:ایران|ايران|iran|ir)[\s]*[\d]{2} '
             r'[\d]{2}[\w]{1}[\d]{3})$', re.IGNORECASE)
 @allow_only_direct_message()
+@ensure_event_exist()
 @ensure_user_exist()
-def add_car(message, user, model, plate_number, *args, **kwargs):
+def add_car(message, user, active_event, model, plate_number, *args, **kwargs):
     UserRepository().add_car(user.user_id, model, plate_number)
+    UserRepository().participate(user.user_id,active_event.event_id)
     message.send(Strings.CAR_REGISTERED)
 
 @respond_to(r'^ls\s*$', re.IGNORECASE)
