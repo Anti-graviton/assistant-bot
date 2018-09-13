@@ -2,8 +2,8 @@
 
 from pymongo import MongoClient
 from datetime import datetime, timedelta
-from .models import User, Car, Event, UserState
-from shared import State
+from .models import User, Car, Event, UserState, ActivityLog
+from shared import State, Action
 from .utils import todict
 
 
@@ -93,3 +93,16 @@ class EventRepository(MongoRepository):
             return True
         else:
             return False
+
+class ActivityLogRepository(MongoRepository):
+   def __init__(self):
+       client = MongoClient('localhost:27017')
+       self.collection = client.assistant_bot.activityLogs
+
+   def log_action(self, activity_log: ActivityLog):
+       self.collection.insert_one(todict(activity_log))
+
+
+
+
+

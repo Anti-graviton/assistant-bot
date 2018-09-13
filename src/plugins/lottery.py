@@ -4,10 +4,12 @@ import re
 from mmpy_bot.bot import respond_to
 from mmpy_bot.utils import allow_only_direct_message, allowed_users
 from .utils import ensure_user_exist,ensure_event_exist
-from db.repository import UserRepository, EventRepository
-from shared import State
+from db.repository import UserRepository, EventRepository, ActivityLogRepository
+from db.models import ActivityLog
+from shared import State, Action
 from settings.settings import ADMINS
 from .messages import Strings
+from datetime import datetime
 
 
 @respond_to(r'^reg\s*$', re.IGNORECASE)
@@ -52,9 +54,13 @@ def mycar(message, user):
 
 @respond_to(r'^rmcar\s*$', re.IGNORECASE)
 @allow_only_direct_message()
+@ensure_event_exist()
 @ensure_user_exist()
-def remove_car(message, user):
+def remove_car(message, user, active_event):
     UserRepository().remove_car(user.user_id)
+    UserRepository().withdraw(user.user_id,active_event.event_id)
+    activity_log=ActivityLog(Action.RMCAR.name, datetime.now(),active_event.event_id,user.user_id )
+    ActivityLogRepository().log_action(activity_log)
     message.send(Strings.CAR_REMOVED)
 
 
@@ -65,6 +71,8 @@ def remove_car(message, user):
 @ensure_user_exist()
 def add_car(message, user, active_event, model, plate_number, *args, **kwargs):
     UserRepository().add_car(user.user_id, model, plate_number)
+    activity_log=ActivityLog(Action.ADDCAR.name, datetime.now(),active_event.event_id,user.user_id )
+    ActivityLogRepository().log_action(activity_log)
     UserRepository().participate(user.user_id,active_event.event_id)
     message.send(Strings.CAR_REGISTERED)
 
@@ -73,7 +81,7 @@ def add_car(message, user, active_event, model, plate_number, *args, **kwargs):
 @allowed_users(*ADMINS)
 def list_participants(message):
     active_event_id=EventRepository().find_active_event()
-    users = UserRepository().find_participants(active_event_id)
+    users = UserRepository().find_participants(active_event_id.event_id)
     usernames = '\n'.join(map(lambda u: "%s, %s" % (u.username, u.car.plate_number), users))
     message.send(usernames)
 

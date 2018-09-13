@@ -6,16 +6,15 @@ from shared import State
 
 
 class ActivityLog:
-    def __init__(self, activity: State, activity_time: datetime,
-                 event_id, user_id):
-        self.activity = activity
+    def __init__(self, action, activity_time: datetime, event_id, user_id):
+        self.action = action
         self.activity_time = activity_time
         self.event_id = event_id
         self.user_id = user_id
     @staticmethod
     def from_dict(activity_log):
-        return ActivityLog(activity_log["activity"], activity_log["activity_time"],
-                           activity_log["event_id"], activity_log["event_id"])
+        return ActivityLog(activity_log["action"], activity_log["activity_time"],
+                           activity_log["event_id"], activity_log["user_id"])
 
 class Event:
     def __init__(self, from_time, to_time, event_id, created_on, is_active):
