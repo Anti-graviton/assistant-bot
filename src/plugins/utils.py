@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from mmpy_bot.dispatcher import Message
-from db.repository import UserRepository
+from db.repository import UserRepository,EventRepository
 from db.models import User
+from .messages import Strings
+
 
 
 class ExtendedMessage(Message):
@@ -35,3 +37,16 @@ def ensure_user_exist():
             return func(ext_message, user, *args, **kw)
         return find_or_create_user
     return wrapper
+
+def ensure_event_exist():
+    def plugin(func):
+        def wrapper(message, *args, **kw):
+            event = EventRepository().find_active_event()
+            if event is None:
+                return message.send(Strings.NOT_VALID_EVENT)
+            return func(message, event,*args, **kw)
+
+        return wrapper
+
+    return plugin
+
