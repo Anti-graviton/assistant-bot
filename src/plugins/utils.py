@@ -48,5 +48,3 @@ def ensure_event_exist():
             return func(message, event,*args, **kw)
         return wrapper
     return plugin
-
-
