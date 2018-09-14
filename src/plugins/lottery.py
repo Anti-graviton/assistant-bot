@@ -78,10 +78,10 @@ def add_car(message, user, active_event, model, plate_number, *args, **kwargs):
 
 @respond_to(r'^ls\s*$', re.IGNORECASE)
 @allow_only_direct_message()
+@ensure_event_exist()
 @allowed_users(*ADMINS)
-def list_participants(message):
-    active_event_id=EventRepository().find_active_event()
-    users = UserRepository().find_participants(active_event_id.event_id)
+def list_participants(message, active_event):
+    users = UserRepository().find_participants(active_event.event_id)
     usernames = '\n'.join(map(lambda u: "%s, %s" % (u.username, u.car.plate_number), users))
     message.send(usernames)
 
