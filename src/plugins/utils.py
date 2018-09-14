@@ -38,6 +38,7 @@ def ensure_user_exist():
         return find_or_create_user
     return wrapper
 
+
 def ensure_event_exist():
     def plugin(func):
         def wrapper(message, *args, **kw):
