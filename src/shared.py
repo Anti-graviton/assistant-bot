@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class State(Enum):
 
         UNKNOWN = 0
@@ -7,8 +8,9 @@ class State(Enum):
         UNREGISTERED = 2
         REGISTERED = 3
 
+
 class Action(Enum):
     
-        UNKNOWN=0
-        ADDCAR=1
-        RMCAR=2
+        UNKNOWN= 0
+        ADDCAR= 1
+        RMCAR= 2

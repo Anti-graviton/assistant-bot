@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from mmpy_bot.dispatcher import Message
-from db.repository import UserRepository,EventRepository
+from db.repository import UserRepository, EventRepository
 from db.models import User
 from .messages import Strings
 
@@ -31,7 +31,7 @@ def ensure_user_exist():
             if user is None:
                 info = ext_message.get_user_info()
                 user = User.from_dict(info)
-                user.user_state=[]
+                user.user_state= []
                 repo.add_user(user)
 
             return func(ext_message, user, *args, **kw)
