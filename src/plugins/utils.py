@@ -31,7 +31,7 @@ def ensure_user_exist():
             if user is None:
                 info = ext_message.get_user_info()
                 user = User.from_dict(info)
-                user.user_state= []
+                user.user_state = []
                 repo.add_user(user)
 
             return func(ext_message, user, *args, **kw)
@@ -45,8 +45,7 @@ def ensure_event_exist():
             if event is None:
                 return message.send(Strings.NOT_VALID_EVENT)
             return func(message, event,*args, **kw)
-
         return wrapper
-
     return plugin
+
 
