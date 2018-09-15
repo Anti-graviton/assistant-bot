@@ -14,7 +14,7 @@ class Messages(object):
         " گذاشته شدید."
     CAR_REGISTERED = "اطلاعات ماشین ثبت شد"
     CAR_AND_PARTICIPATION_REGISTERED = "اطلاعات ماشین ثبت شد و شما در"\
-        " قرعه‌کشی شرکت داده‌شدید. برای انصراف unreg بزنید"
+        " قرعه‌کشی شرکت داده شدید. برای انصراف بزنید `unreg`"
     NEW_EVENT_REGISTERED = "قرعه کشی جدید ثبت گردید"
     EVENT_ALREADY_EXISTS = "امکان ثبت قرعه‌کشی دیگری بصورت هم‌زمان وجود ندارد"
     EVENT_DEACTIVED = "قرعه کشی با موفقیت غیرفعال شد"
