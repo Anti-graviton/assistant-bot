@@ -1,5 +1,5 @@
 import os
-from .secrets import email, password
+from settings.secrets import email, password, admins
 
 BOT_URL = 'http://172.16.30.11:8065/api/v4'
 BOT_LOGIN = email
@@ -9,6 +9,7 @@ BOT_TOKEN = None
 SSL_VERIFY = False
 DEBUG = False
 PLUGINS = ['plugins']
+ADMINS = admins
 DEFAULT_REPLY = '''
 ### نمی‌فهمم چی می‌گی!
 من یه ربات دون‌پایه‌ام! لطفا عین همین شیوه‌ای که این پایین نوشته با من صحبت کن.
@@ -20,6 +21,7 @@ DEFAULT_REPLY = '''
 |addcar| اضافه کردن ماشین|
 |rmcar |حذف ماشین        |
 |mycar |اطلاعات ماشین     |
+|lshow |زمان شروع و پایان ثبت‌نام|
 
 برای اضافه کردن ماشین یکم باید تمرکز کنی.
 بعد از دستور باید دو تا مقدار بهم بدی که با خط تیره (-) از هم جدا شده‌ان.
