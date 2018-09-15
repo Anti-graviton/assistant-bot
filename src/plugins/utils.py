@@ -3,8 +3,7 @@
 from mmpy_bot.dispatcher import Message
 from db.repository import UserRepository, EventRepository
 from db.models import User
-from .messages import Strings
-
+from .messages import Messages
 
 
 class ExtendedMessage(Message):
@@ -44,7 +43,7 @@ def ensure_event_exist():
         def wrapper(message, *args, **kw):
             event = EventRepository().find_active_event()
             if event is None:
-                return message.send(Strings.NOT_VALID_EVENT)
-            return func(message, event,*args, **kw)
+                return message.send(Messages.NOT_VALID_EVENT)
+            return func(message, event, *args, **kw)
         return wrapper
     return plugin
