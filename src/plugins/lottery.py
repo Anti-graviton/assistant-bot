@@ -22,7 +22,7 @@ def register(message, user, active_event):
 
     if not user.is_registered_in_event(active_event.event_id):
         UserRepository().participate(user.user_id, active_event.event_id)
-        message.react(Messages.SUCCESSFUL_REGISTERATION)
+        message.send(Messages.SUCCESSFUL_REGISTERATION)
     else:
         message.send(Messages.ALREADY_REGISTERED)
 
@@ -91,10 +91,13 @@ def add_car(message, user, model, plate_number, *args, **kwargs):
 
 @respond_to(r'^lls\s*$', re.IGNORECASE)
 @allow_only_direct_message()
-@ensure_event_exist()
 @allowed_users(*ADMINS)
-def list_participants(message, active_event):
-    users = UserRepository().find_participants(active_event.event_id)
+def list_participants(message):
+    latest_event = EventRepository().find_latest_event()
+    if latest_event is None:
+        return message.send(Messages.NO_EVENT_EXISTS)
+
+    users = UserRepository().find_participants(latest_event.event_id)
     usernames = '\n'.join(map(lambda u: "%s, %s" %
                               (u.username, u.car.plate_number), users))
     message.send(usernames)

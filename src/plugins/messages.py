@@ -18,3 +18,4 @@ class Messages(object):
     NEW_EVENT_REGISTERED = "قرعه کشی جدید ثبت گردید"
     EVENT_ALREADY_EXISTS = "امکان ثبت قرعه‌کشی دیگری بصورت هم‌زمان وجود ندارد"
     EVENT_DEACTIVED = "قرعه کشی با موفقیت غیرفعال شد"
+    NO_EVENT_EXISTS = "هیچ قرعه‌کشی‌ای یافت نشد"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from datetime import datetime, timedelta
 from .models import User, Car, Event, ActivityLog
 from shared import State
@@ -94,6 +94,15 @@ class EventRepository(MongoRepository):
             return Event.from_dict(active_event)
 
         return None
+
+    def find_latest_event(self):
+        try:
+            event = self.collection.find().sort("to_time", DESCENDING)\
+                    .limit(1).next()
+        except StopIteration:
+            return None
+        
+        return Event.from_dict(event)
 
     def add_event(self, duration):
         now = datetime.now()
