@@ -99,7 +99,7 @@ def list_participants(message):
 
     users = UserRepository().find_participants(latest_event.event_id)
     usernames = '\n'.join(map(lambda u: "%s, %s" %
-                              (u.username, u.car.plate_number), users))
+                              (u.username, u.car.__repr__()), users))
     message.send(usernames)
 
 
