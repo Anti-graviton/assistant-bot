@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pymongo import MongoClient, DESCENDING
+from pymongo import MongoClient, ASCENDING, DESCENDING
 from datetime import datetime, timedelta
 from .models import User, Car, Event, ActivityLog
 from shared import State
@@ -26,14 +26,14 @@ class UserRepository(MongoRepository):
         return User.from_dict(user) if user is not None else None
 
     def get_users(self):
-        cursor = self.collection.find({})
+        cursor = self.collection.find().sort('username', ASCENDING)
         users = map(lambda u: User.from_dict(u), cursor)
         return list(users)
 
     def find_participants(self, event_id):
         user_filter = {'user_state': {'$elemMatch': {
             'event_id': event_id, 'state': State.REGISTERED.name}}}
-        cursor = self.collection.find(user_filter)
+        cursor = self.collection.find(user_filter).sort('username', ASCENDING)
         users = map(lambda u: User.from_dict(u), cursor)
         return list(users)
 
