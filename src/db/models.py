@@ -58,9 +58,12 @@ class User(MongoEntity):
         self.user_state = user_state
 
     def is_registered_in_event(self, event_id: str):
-        return any(s['event_id'] == event_id
-                   and s['state'] == State.REGISTERED.name
-                   for s in self.user_state)
+        if self.user_state is not None:
+            return any(s['event_id'] == event_id
+                       and s['state'] == State.REGISTERED.name
+                       for s in self.user_state)
+        else:
+            return False
 
     @staticmethod
     def from_dict(user):

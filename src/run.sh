@@ -1,4 +1,4 @@
 #!/bin/bash
-. /home/fanap-bot/assistant-bot/.venv/bin/activate
- /home/fanap-bot/assistant-bot/.venv/bin/python3 /home/fanap-bot/assistant-bot/src/bot.py
+. .venv/bin/activate
+.venv/bin/python3 src/bot.py
 
