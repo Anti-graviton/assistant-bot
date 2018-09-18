@@ -101,7 +101,7 @@ class EventRepository(MongoRepository):
                     .limit(1).next()
         except StopIteration:
             return None
-        
+
         return Event.from_dict(event)
 
     def add_event(self, duration):
