@@ -3,6 +3,7 @@
 from mmpy_bot.dispatcher import Message
 from db.repository import UserRepository, EventRepository
 from db.models import User
+from shared import EventType
 from .messages import Messages
 
 
@@ -40,8 +41,8 @@ def ensure_user_exist():
 
 def ensure_event_exist():
     def plugin(func):
-        def wrapper(message, *args, **kw):
-            event = EventRepository().find_active_event()
+        def wrapper(message, event_type=EventType.LOTTERY.name, *args, **kw):
+            event = EventRepository().find_active_event_by_type(event_type)
             if event is None:
                 return message.send(Messages.NOT_VALID_EVENT)
             return func(message, event, *args, **kw)

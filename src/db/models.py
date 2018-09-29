@@ -94,19 +94,22 @@ class ActivityLog(MongoEntity):
 
 
 class Event(MongoEntity):
-    def __init__(self, from_time, to_time, event_id, created_on, is_active):
+    def __init__(self, event_type, from_time, to_time, event_id,
+                 is_active=True, created_on=None):
         super(Event, self).__init__()
+        self.event_type = event_type
         self.from_time = from_time
         self.to_time = to_time
-        self.is_active = is_active
         self.event_id = event_id
+        self.created_on = created_on or self.created_on
+        self.is_active = is_active
 
     @staticmethod
     def from_dict(event: dict):
-        return Event(event.get('from_time'), event.get('to_time'),
-                     event.get('event_id'), event.get('creted_on'),
-                     event.get('is_active'))
+        return Event(event.get('event_type'), event.get('from_time'),
+                     event.get('to_time'), event.get('event_id'),
+                     event.get('is_active'), event.get('created_on'))
 
     def __repr__(self):
-        return '**From** {:%Y-%m-%d %H:%M}**, To** {:%Y-%m-%d %H:%M}'\
-                .format(self.from_time, self.to_time)
+        return '{} **From** {:%Y-%m-%d %H:%M}**, To** {:%Y-%m-%d %H:%M}'\
+                .format(self.event_id, self.from_time, self.to_time)

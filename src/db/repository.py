@@ -81,9 +81,22 @@ class EventRepository(MongoRepository):
         super().__init__()
         self.collection = self.client.assistant_bot.events
 
-    def find_active_event(self):
+    def find_active_events(self):
         now = datetime.now()
         event_filter = {'$and': [
+            {'is_active': True},
+            {'from_time': {'$lte': now}},
+            {'to_time': {'$gte': now}}
+        ]}
+
+        cursor = self.collection.find(event_filter)
+        events = map(lambda e: Event.from_dict(e), cursor)
+        return list(events)
+
+    def find_active_event_by_type(self, event_type):
+        now = datetime.now()
+        event_filter = {'$and': [
+            {'type': event_type},
             {'is_active': True},
             {'from_time': {'$lte': now}},
             {'to_time': {'$gte': now}}
@@ -104,16 +117,15 @@ class EventRepository(MongoRepository):
 
         return Event.from_dict(event)
 
-    def add_event(self, duration):
+    def add_event(self, event_type, event_id, duration):
         now = datetime.now()
-        event_id = str(now.year)+'-'+str(now.month) + '-'+str(now.day)+'-' + \
-            str(now.hour)+str(now.minute)+str(now.second)+str(now.microsecond)
-        event = Event(now, now+timedelta(hours=duration),
-                      event_id, datetime.now(), True)
+        from_time = now
+        to_time = now + timedelta(hourse=duration)
+        event = Event(event_type, from_time, to_time, event_id)
         self.collection.insert_one(todict(event))
 
-    def deactive_event(self):
-        event_filter = {"is_active": True}
+    def deactive_event_by_type(self, event_type):
+        event_filter = {"event_type": event_type, "is_active": True}
         update = {"$set": {"is_active": False}}
         result = self.collection.update_one(event_filter, update)
         if result.matched_count > 0:

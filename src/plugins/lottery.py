@@ -1,39 +1,40 @@
 # -*- coding: utf-8 -*-
 
 import re
+from datetime import datetime
 from mmpy_bot.bot import respond_to
 from mmpy_bot.utils import allow_only_direct_message, allowed_users
 from .utils import ensure_user_exist, ensure_event_exist
 from db.repository import UserRepository, EventRepository, \
     ActivityLogRepository
 from db.models import ActivityLog, Car
-from shared import Action
+from shared import Action, EventType
 from settings.settings import ADMINS
 from .messages import Messages
 
 
-@respond_to(r'^reg\s*$', re.IGNORECASE)
+@respond_to(r'^reg(\s+\w+|)\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_event_exist()
 @ensure_user_exist()
-def register(message, user, active_event):
+def register(message, user, event):
     if user.car is None:
         return message.send(Messages.DEFINE_CAR)
 
-    if not user.is_registered_in_event(active_event.event_id):
-        UserRepository().participate(user.user_id, active_event.event_id)
+    if not user.is_registered_in_event(event.event_id):
+        UserRepository().participate(user.user_id, event.event_id)
         message.send(Messages.SUCCESSFUL_REGISTERATION)
     else:
         message.send(Messages.ALREADY_REGISTERED)
 
 
-@respond_to(r'^unreg\s*$', re.IGNORECASE)
+@respond_to(r'^unreg(\s+\w+|)\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @ensure_event_exist()
 @ensure_user_exist()
-def withdraw(message, user, active_event):
-    if user.is_registered_in_event(active_event.event_id):
-        UserRepository().withdraw(user.user_id, active_event.event_id)
+def withdraw(message, user, event):
+    if user.is_registered_in_event(event.event_id):
+        UserRepository().withdraw(user.user_id, event.event_id)
         message.send(Messages.UNDO_REGISTERATION)
     else:
         message.send(Messages.NOT_YET_REGISTERED)
@@ -61,7 +62,8 @@ def remove_car(message, user):
                                details=activity_details)
     ActivityLogRepository().log_action(activity_log)
 
-    active_event = EventRepository().find_active_event()
+    active_event = \
+        EventRepository().find_active_event_by_type(EventType.LOTTERY.name)
     if active_event is not None:
         UserRepository().withdraw(user.user_id, active_event.event_id)
         return message.send(Messages.CAR_REMOVED_AND_WITHDRAWED)
@@ -81,7 +83,8 @@ def add_car(message, user, model, plate_number, *args, **kwargs):
                                details=activity_details)
     ActivityLogRepository().log_action(activity_log)
 
-    active_event = EventRepository().find_active_event()
+    active_event = \
+        EventRepository().find_active_event_by_type(EventType.LOTTERY.name)
     if active_event is not None:
         UserRepository().participate(user.user_id, active_event.event_id)
         return message.send(Messages.CAR_AND_PARTICIPATION_REGISTERED)
@@ -112,37 +115,46 @@ def list_users(message):
     message.send(usernames)
 
 
-@respond_to(r'^lopen\s+(\d{1,2})(h|d)\s*$', re.IGNORECASE)
+@respond_to(r'^open\s+(\d{1,2})(h|d)(\s+\w+|)(\s+\w+|)\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
-def add_event(message, duration, unit):
-    active_event = EventRepository().find_active_event()
+def add_event(message, duration, unit, event_type=EventType.LOTTERY.name,
+              event_id=None):
+    event_type = event_type.strip()
+    active_event = EventRepository().find_active_event_by_type(event_type)
     if active_event is None:
         # ToDo move duration calculation to add_event method
         duration = int(duration)
         if unit == "d":
             duration = 24 * duration
-        EventRepository().add_event(duration)
+        if event_id is None:
+            now = datetime.now()
+            event_id = "{}{}{}".format(event_type, now.year, now.month)
+        else:
+            event_id = event_id.strip()
+
+        EventRepository().add_event(event_type, event_id, duration)
         message.send(Messages.NEW_EVENT_REGISTERED)
     else:
         message.send(Messages.EVENT_ALREADY_EXISTS)
 
 
-@respond_to(r'^lshow\s*$', re.IGNORECASE)
+@respond_to(r'^lsevent\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 def get_events(message):
-    event = EventRepository().find_active_event()
-    if event is not None:
-        message.send(event.__repr__())
+    events = EventRepository().find_active_events()
+    if len(events) is not 0:
+        msg = '\n'.join(map(lambda e: e.__repr__(), events))
+        message.send(msg)
     else:
         message.send(Messages.NOT_VALID_EVENT)
 
 
-@respond_to(r'^lclose\s*$', re.IGNORECASE)
+@respond_to(r'^close(\s+\w+|)\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
-def delete_event(message):
-    event = EventRepository().deactive_event()
+def delete_event(message, event_type=EventType.LOTTERY.name):
+    event = EventRepository().deactive_event_by_type(event_type)
     if event is True:
         message.send(Messages.EVENT_DEACTIVED)
     else:
