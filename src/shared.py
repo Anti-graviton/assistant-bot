@@ -12,3 +12,8 @@ class Action(Enum):
         UNKNOWN = 0
         ADDCAR = 1
         RMCAR = 2
+
+
+class EventType(Enum):
+        LOTTERY = 0
+        PES = 1
