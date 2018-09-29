@@ -63,7 +63,7 @@ def remove_car(message, user):
     ActivityLogRepository().log_action(activity_log)
 
     active_event = \
-        EventRepository().find_active_event_by_type(EventType.LOTTERY.name)
+        EventRepository().find_active_event_by_type(EventType.LOTTERY.value)
     if active_event is not None:
         UserRepository().withdraw(user.user_id, active_event.event_id)
         return message.send(Messages.CAR_REMOVED_AND_WITHDRAWED)
@@ -84,7 +84,7 @@ def add_car(message, user, model, plate_number, *args, **kwargs):
     ActivityLogRepository().log_action(activity_log)
 
     active_event = \
-        EventRepository().find_active_event_by_type(EventType.LOTTERY.name)
+        EventRepository().find_active_event_by_type(EventType.LOTTERY.value)
     if active_event is not None:
         UserRepository().participate(user.user_id, active_event.event_id)
         return message.send(Messages.CAR_AND_PARTICIPATION_REGISTERED)
@@ -118,9 +118,7 @@ def list_users(message):
 @respond_to(r'^open\s+(\d{1,2})(h|d)(\s+\w+|)(\s+\w+|)\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
-def add_event(message, duration, unit, event_type=EventType.LOTTERY.name,
-              event_id=None):
-    event_type = event_type.strip()
+def add_event(message, duration, unit, event_type, event_id=None):
     active_event = EventRepository().find_active_event_by_type(event_type)
     if active_event is None:
         # ToDo move duration calculation to add_event method
@@ -130,8 +128,6 @@ def add_event(message, duration, unit, event_type=EventType.LOTTERY.name,
         if event_id is None:
             now = datetime.now()
             event_id = "{}{}{}".format(event_type, now.year, now.month)
-        else:
-            event_id = event_id.strip()
 
         EventRepository().add_event(event_type, event_id, duration)
         message.send(Messages.NEW_EVENT_REGISTERED)
@@ -153,7 +149,7 @@ def get_events(message):
 @respond_to(r'^close(\s+\w+|)\s*$', re.IGNORECASE)
 @allow_only_direct_message()
 @allowed_users(*ADMINS)
-def delete_event(message, event_type=EventType.LOTTERY.name):
+def delete_event(message, event_type):
     event = EventRepository().deactive_event_by_type(event_type)
     if event is True:
         message.send(Messages.EVENT_DEACTIVED)

@@ -3,7 +3,7 @@
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from datetime import datetime, timedelta
 from .models import User, Car, Event, ActivityLog
-from shared import State
+from shared import State, EventType
 from .utils import todict
 
 
@@ -93,10 +93,11 @@ class EventRepository(MongoRepository):
         events = map(lambda e: Event.from_dict(e), cursor)
         return list(events)
 
-    def find_active_event_by_type(self, event_type):
+    def find_active_event_by_type(self,
+                                  event_type: str=EventType.LOTTERY.value):
         now = datetime.now()
         event_filter = {'$and': [
-            {'type': event_type},
+            {'type': event_type.strip().lower()},
             {'is_active': True},
             {'from_time': {'$lte': now}},
             {'to_time': {'$gte': now}}
@@ -117,15 +118,20 @@ class EventRepository(MongoRepository):
 
         return Event.from_dict(event)
 
-    def add_event(self, event_type, event_id, duration):
+    def add_event(self, event_type: str=EventType.LOTTERY.value,
+                  event_id: str=None, duration: int=24):
         now = datetime.now()
         from_time = now
-        to_time = now + timedelta(hourse=duration)
-        event = Event(event_type, from_time, to_time, event_id)
+        to_time = now + timedelta(hours=duration)
+        if event_id is None:
+            event_id = "{}{:02d}{:02d}".format(event_type, now.year, now.month)
+
+        event = Event(event_type.strip().lower(), from_time, to_time, event_id)
         self.collection.insert_one(todict(event))
 
-    def deactive_event_by_type(self, event_type):
-        event_filter = {"event_type": event_type, "is_active": True}
+    def deactive_event_by_type(self, event_type: str=EventType.LOTTERY.value):
+        event_filter = {"event_type": event_type.strip().lower(),
+                        "is_active": True}
         update = {"$set": {"is_active": False}}
         result = self.collection.update_one(event_filter, update)
         if result.matched_count > 0:

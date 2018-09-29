@@ -15,5 +15,5 @@ class Action(Enum):
 
 
 class EventType(Enum):
-        LOTTERY = 0
-        PES = 1
+        LOTTERY = 'lottery'
+        PES = 'pes'
