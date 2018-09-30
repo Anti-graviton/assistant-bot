@@ -18,8 +18,10 @@ from .messages import Messages
 @ensure_event_exist()
 @ensure_user_exist()
 def register(message, user, event):
-    if user.car is None:
+    if event.event_type is EventType.LOTTERY.value and user.car is None:
         return message.send(Messages.DEFINE_CAR)
+    elif event.event_type is EventType.PES.value:
+        pass  # ToDo extract params after event_type in message
 
     if not user.is_registered_in_event(event.event_id):
         UserRepository().participate(user.user_id, event.event_id)
@@ -62,10 +64,10 @@ def remove_car(message, user):
                                details=activity_details)
     ActivityLogRepository().log_action(activity_log)
 
-    active_event = \
+    active_lottery = \
         EventRepository().find_active_event_by_type(EventType.LOTTERY.value)
-    if active_event is not None:
-        UserRepository().withdraw(user.user_id, active_event.event_id)
+    if active_lottery is not None:
+        UserRepository().withdraw(user.user_id, active_lottery.event_id)
         return message.send(Messages.CAR_REMOVED_AND_WITHDRAWED)
 
     message.send(Messages.CAR_REMOVED)
@@ -83,10 +85,10 @@ def add_car(message, user, model, plate_number, *args, **kwargs):
                                details=activity_details)
     ActivityLogRepository().log_action(activity_log)
 
-    active_event = \
+    active_lottery = \
         EventRepository().find_active_event_by_type(EventType.LOTTERY.value)
-    if active_event is not None:
-        UserRepository().participate(user.user_id, active_event.event_id)
+    if active_lottery is not None:
+        UserRepository().participate(user.user_id, active_lottery.event_id)
         return message.send(Messages.CAR_AND_PARTICIPATION_REGISTERED)
 
     message.send(Messages.CAR_REGISTERED)
