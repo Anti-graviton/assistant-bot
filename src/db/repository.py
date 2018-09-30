@@ -47,21 +47,23 @@ class UserRepository(MongoRepository):
         return self.collection.update_one({'user_id': user_id},
                                           {'$set': {'car': car.__dict__}})
 
-    def participate(self, user_id, active_event_id):
-        self.__update_user_state(user_id, State.REGISTERED, active_event_id)
+    def participate(self, user_id, active_event_id, details: dict=None):
+        self.__update_user_state(user_id, State.REGISTERED, active_event_id, details)
 
     def withdraw(self, user_id, active_event_id):
         self.__update_user_state(user_id, State.UNREGISTERED, active_event_id)
 
     def __update_user_state(self, user_id: str, state: State,
-                            active_event_id: str):
+                            active_event_id: str, details: dict=None):
         query = {"user_id": user_id,
                  "user_state": {
                      "$elemMatch": {"event_id": active_event_id}
                  }}
         update = {"$set": {
             "user_state.$.modified_on": datetime.now(),
-            "user_state.$.state": state.name}}
+            "user_state.$.state": state.name,
+            "user_state.$.details": details
+            }}
 
         res = self.collection.update_one(query, update)
         if res.matched_count < 1:
@@ -71,7 +73,8 @@ class UserRepository(MongoRepository):
                     "user_state": {
                         "modified_on": datetime.now(),
                         "state": state.name,
-                        "event_id": active_event_id
+                        "event_id": active_event_id,
+                        "details": details
                     }
                 }})
 
